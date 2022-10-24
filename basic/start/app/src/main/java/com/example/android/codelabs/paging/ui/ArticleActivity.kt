@@ -19,10 +19,11 @@ package com.example.android.codelabs.paging.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +49,23 @@ class ArticleActivity : AppCompatActivity() {
         val articleAdapter = ArticleAdapter()
 
         binding.bindAdapter(articleAdapter = articleAdapter)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                //CombinedLoadStates 인스턴스는 데이터를 로드하는 Paging 라이브러리에 있는 모든 구성요소의 로드 상태를 설명
+                //로드 상태를 설명하는 데 도움이 되는 세 가지 고유한 클래스
+                // CombinedLoadStates
+                // LoadStates
+                // LoadState
+                // CombinedLoadStates에는 LoadStates 인스턴스가 있고 LoadStates는 LoadState 인스턴스를 제공.
+                //https://developer.android.com/codelabs/android-paging-basics#9
+                articleAdapter.loadStateFlow.collect {
+                    binding.prependProgress.isVisible = it.source.prepend is LoadState.Loading
+                    binding.appendProgress.isVisible = it.source.append is LoadState.Loading
+                }
+            }
+        }
 
         // Collect from the Article Flow in the ViewModel, and submit it to the
         // ListAdapter.
