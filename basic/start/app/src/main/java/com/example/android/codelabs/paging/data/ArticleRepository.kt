@@ -26,17 +26,12 @@ private val firstArticleCreatedTime = LocalDateTime.now()
  * Repository class that mimics fetching [Article] instances from an asynchronous source.
  */
 class ArticleRepository {
-    /**
-     * Exposed singular stream of [Article] instances
-     */
-    val articleStream: Flow<List<Article>> = flowOf(
-        (0..500).map { number ->
-            Article(
-                id = number,
-                title = "Article $number",
-                description = "This describes article $number",
-                created = firstArticleCreatedTime.minusDays(number.toLong())
-            )
-        }
-    )
+    fun articlePagingSource() = ArticlePagingSource()
 }
+/**
+ * PagingData
+ * 로드된 데이터를 래핑하고 Paging 라이브러리가 추가 데이터를 가져올 시기를 결정하는 데 도움을 주는 유형
+ * ex) Flow<PagingData<Article>>
+ *
+ *
+ */
